@@ -159,7 +159,7 @@
 
   /* Camera view with modern styling */
   .photo-upload-camera {
-    @apply relative bg-black rounded-2xl overflow-hidden w-full aspect-video
+    @apply relative bg-black rounded-2xl overflow-hidden w-full 
            border border-border/40 shadow-lg;
   }
 

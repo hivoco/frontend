@@ -264,14 +264,14 @@ export function PhotoUpload({
           )}
 
           {isCameraActive && (
-            <div className="space-y-4">
-              <div className="photo-upload-camera">
+            <div className="space-y-4 ">
+              <div className="photo-upload-camera ">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
                   muted
-                  className="w-full h-auto block bg-black"
+                  className="w-full h-full block bg-black aspect-square"
                 />
                 <div className="absolute inset-0 border-2 border-primary/20 rounded-2xl pointer-events-none" />
               </div>
@@ -296,12 +296,12 @@ export function PhotoUpload({
 
           {preview && (
             <div className="space-y-4">
-              <div className="photo-upload-preview group relative">
+              <div className="photo-upload-preview group relative ">
                 <img
                   src={preview}
                   alt="Preview"
                   className={cn(
-                    "w-full h-full object-cover transition-all duration-300 rounded-2xl",
+                    "w-full h-full object-cover transition-all duration-300 rounded-2xl ",
                     isSubmitting && "opacity-75 brightness-95"
                   )}
                 />

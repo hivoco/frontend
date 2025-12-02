@@ -200,7 +200,7 @@ export function PhotoUploadBasic() {
     }
   };
 
-  if(imageArray.length > 0) {
+  if (imageArray.length > 0) {
     return <ImageDisplay images={imageArray} />;
   }
 
@@ -209,7 +209,7 @@ export function PhotoUploadBasic() {
       <Card className="border-primary/30 shadow-2xl hover:shadow-3xl card-lift overflow-hidden backdrop-blur-sm bg-white/95">
         <CardHeader className="bg-linear-to-br from-primary/10 via-purple-50 to-accent/5 border-b border-primary/20 pb-8 pt-8">
           <CardTitle className="text-3xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
-            Upload or Capture Photo
+            Upload a photo and get all matching images
           </CardTitle>
           <CardDescription className="text-base mt-2 text-foreground/70">
             Choose a photo from your device or capture using your camera
@@ -231,8 +231,12 @@ export function PhotoUploadBasic() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0" />
                 <div className="flex-1">
-                  <Badge className="bg-amber-600 hover:bg-amber-700 mb-2">No Images</Badge>
-                  <p className="text-sm text-amber-900 font-medium">No matching faces found. Try uploading another photo.</p>
+                  <Badge className="bg-amber-600 hover:bg-amber-700 mb-2">
+                    No Images
+                  </Badge>
+                  <p className="text-sm text-amber-900 font-medium">
+                    No matching faces found. Try uploading another photo.
+                  </p>
                 </div>
               </div>
             </div>
@@ -302,7 +306,7 @@ export function PhotoUploadBasic() {
                   autoPlay
                   playsInline
                   muted
-                  className="w-full h-auto block bg-black"
+                  className="w-full h-full block bg-black aspect-square"
                 />
                 <div className="absolute inset-0 border-2 border-primary/20 rounded-2xl pointer-events-none" />
               </div>
@@ -327,7 +331,7 @@ export function PhotoUploadBasic() {
 
           {preview && (
             <div className="space-y-4">
-              <div className="photo-upload-preview group relative">
+              <div className="photo-upload-preview group relative ">
                 <img
                   src={preview}
                   alt="Preview"
@@ -350,7 +354,7 @@ export function PhotoUploadBasic() {
               <div className="flex gap-3">
                 <Button
                   onClick={handleSubmit}
-                  disabled={isSubmitting || isLoading }
+                  disabled={isSubmitting || isLoading}
                   className="flex-1 h-12 rounded-2xl font-semibold gap-2 bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (

@@ -6,24 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import JSZip from "jszip";
 
-// const images = [
-//   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-//   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-//   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-//   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-//   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-//   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-//   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-//   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-//   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-//   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-//   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-//   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-//   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-//   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-//   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-// ];
-
 type imgItem = {
   image_url: string;
 };
@@ -34,6 +16,42 @@ type Props = {
 
 export default function ImageDisplay({ images }: Props) {
   const [downloading, setDownloading] = useState(false);
+  const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
+
+  // const images = [
+  //   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+  //   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+  //   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+  //   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+  //   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
+  //   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+  //   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+  //   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+  //   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+  //   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
+  //   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+  //   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+  //   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+  //   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+  //   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
+  // ];
+
+  const downloadSingle = async (imageUrl: string, index: number) => {
+    setDownloadingIndex(index);
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `image-${index + 1}.jpg`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download failed:", error);
+    } finally {
+      setDownloadingIndex(null);
+    }
+  };
 
   const downloadAll = async () => {
     setDownloading(true);
@@ -43,6 +61,8 @@ export default function ImageDisplay({ images }: Props) {
       await Promise.all(
         images.map(async (item, index) => {
           const response = await fetch(item.image_url);
+          // const response = await fetch(item);
+
           const blob = await response.blob();
           zip.file(`image-${index + 1}.jpg`, blob);
         })
@@ -62,7 +82,7 @@ export default function ImageDisplay({ images }: Props) {
   };
 
   return (
-    <main className="min-h-[calc(100vh-64px)] p-6 space-y-6 w-full max-w-5xl mx-auto">
+    <main className="min-h-[calc(100vh-64px)] p-6 space-y-6 w-full max-w-4xl mx-auto">
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary mb-2">Your Photos</h2>
@@ -97,10 +117,24 @@ export default function ImageDisplay({ images }: Props) {
           >
             <Image
               src={item.image_url}
+              // src={item}
               alt="img"
               fill
               className="object-cover group-hover:scale-110 transition-all duration-300"
             />
+
+            <Button
+              onClick={() => downloadSingle(item.image_url, i)}
+              disabled={downloadingIndex === i}
+              size="icon"
+              className="absolute bottom-2 right-2 bg-primary/60 hover:bg-primary text-white rounded-full shadow-lg transition-all"
+            >
+              {downloadingIndex === i ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Download className="w-3 h-3" />
+              )}
+            </Button>
           </div>
         ))}
       </div>

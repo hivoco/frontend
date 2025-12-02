@@ -1,21 +1,14 @@
 "use client";
 
-import ImageDisplay from "@/components/ImageDisplay";
 import { PhotoUploadWithID } from "@/components/PhotoUploadWithID";
 import { PhotoUploadBasic } from "@/components/PhotoUploadBasic";
 import { Suspense, useState } from "react";
-import { searchFace } from "@/lib/fetch";
+import { ArrowRight, Upload, Images } from "lucide-react";
 
-type HomeView = "home" | "view";
+type HomeView = "home" | "upload-info" | "upload-photo" | "view-images";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<HomeView>("home");
-
-  const handlePhotoSubmitBasic = async (file: File) => {
-    const response = await searchFace(file);
-    console.log("Photo submitted:", response);
-    setCurrentView("view");
-  };
 
   return (
     <div className="min-h-[calc(100vh-64px)] w-full flex items-center justify-center px-4 py-8 relative overflow-hidden">
@@ -26,46 +19,102 @@ export default function Home() {
 
       <main className="relative w-full">
         {currentView === "home" && (
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Suspense
-                fallback={
-                  <div className="flex items-center justify-center w-full h-64">
-                    <div className="photo-upload-spinner" />
-                  </div>
-                }
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Option 1: Upload Information */}
+              <button
+                onClick={() => setCurrentView("upload-info")}
+                className="group relative p-8 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-white to-primary/5 hover:border-primary/60 hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
-                <div>
-                  <PhotoUploadWithID />
+                <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative space-y-4">
+                  <div className="inline-flex p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                    <Upload className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">
+                      Upload Information
+                    </h2>
+                    <p className="text-muted-foreground mb-4">
+                      Enter your details, upload a photo and update your record
+                      in the database
+                    </p>
+                  </div>
+                  <div className="flex items-center text-primary font-semibold group-hover:gap-3 gap-2 transition-all">
+                    Get Started
+                    <ArrowRight className="h-5 w-5" />
+                  </div>
                 </div>
-              </Suspense>
+              </button>
 
-              <Suspense
-                fallback={
-                  <div className="flex items-center justify-center w-full h-64">
-                    <div className="photo-upload-spinner" />
-                  </div>
-                }
+              {/* Option 2: Upload Photo */}
+              <button
+                onClick={() => setCurrentView("upload-photo")}
+                className="group relative p-8 rounded-2xl border-2 border-secondary/30 bg-gradient-to-br from-secondary/5 via-white to-secondary/5 hover:border-secondary/60 hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
-                <div>
-                  <PhotoUploadBasic />
+                <div className="absolute inset-0 bg-linear-to-r from-secondary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative space-y-4">
+                  <div className="inline-flex p-3 rounded-xl bg-secondary/10 group-hover:bg-secondary/20 transition-colors">
+                    <Images className="h-6 w-6 text-secondary" />
+                  </div>
+                  <div className="text-left">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">
+                      Get Your Photos
+                    </h2>
+                    <p className="text-muted-foreground mb-4">
+                      Upload a photo and find all matching images from our
+                      database
+                    </p>
+                  </div>
+                  <div className="flex items-center text-secondary font-semibold group-hover:gap-3 gap-2 transition-all">
+                    Get Started
+                    <ArrowRight className="h-5 w-5" />
+                  </div>
                 </div>
-              </Suspense>
+              </button>
             </div>
           </div>
         )}
 
-        {/* {currentView === "view" && (
-          <div className="flex flex-col items-center justify-center gap-4">
-            <ImageDisplay />
+        {currentView === "upload-info" && (
+          <div className="max-w-md mx-auto">
             <button
               onClick={() => setCurrentView("home")}
-              className="text-primary hover:text-primary/80 font-semibold underline transition-colors"
+              className="mb-6 text-primary hover:text-primary/80 font-semibold flex items-center gap-2 transition-colors"
             >
               ← Back to Home
             </button>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center w-full h-64">
+                  <div className="photo-upload-spinner" />
+                </div>
+              }
+            >
+              <PhotoUploadWithID />
+            </Suspense>
           </div>
-        )} */}
+        )}
+
+        {currentView === "upload-photo" && (
+          <div className=" mx-auto">
+            <button
+              onClick={() => setCurrentView("home")}
+              className="mb-6 text-primary hover:text-primary/80 font-semibold flex items-center gap-2 transition-colors"
+            >
+              ← Back to Home
+            </button>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center w-full h-64">
+                  <div className="photo-upload-spinner" />
+                </div>
+              }
+            >
+              <PhotoUploadBasic />
+            </Suspense>
+          </div>
+        )}
       </main>
     </div>
   );

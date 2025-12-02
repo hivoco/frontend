@@ -4,7 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import { Camera, Upload, X, Check } from "lucide-react";
 import { usePhotoCapture } from "@/hooks/usePhotoCapture";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { updateCSVrecord } from "@/lib/fetch";
@@ -169,8 +175,8 @@ export function PhotoUploadWithID() {
         phoneNumber,
         csvOption
       );
-      
-      if(response.status==="success"){
+
+      if (response.status === "success") {
         setSuccessMessage(response.message);
         setFailureMessage(null);
         setTimeout(() => setSuccessMessage(null), 4000);
@@ -195,6 +201,12 @@ export function PhotoUploadWithID() {
     <div className="w-full max-w-md mx-auto">
       <Card className="border-primary/30 shadow-2xl hover:shadow-3xl card-lift overflow-hidden backdrop-blur-sm bg-white/95">
         <CardHeader className="bg-linear-to-br from-primary/10 via-purple-50 to-accent/5 border-b border-primary/20 pb-6 pt-6">
+          <CardTitle className="text-3xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+            Input Details here
+          </CardTitle>
+          <CardDescription className="text-base mt-2 text-foreground/70">
+            Enter Ada, phone, select data source, and upload/capture image.
+          </CardDescription>
           {/* Form Inputs - At the very top */}
           <form
             ref={formRef}
@@ -283,8 +295,12 @@ export function PhotoUploadWithID() {
               <div className="flex items-center gap-3">
                 <Check className="h-5 w-5 text-emerald-600" />
                 <div className="flex-1">
-                  <Badge className="bg-emerald-600 hover:bg-emerald-700 mb-2">Success</Badge>
-                  <p className="text-sm text-emerald-900 font-medium">{successMessage}</p>
+                  <Badge className="bg-emerald-600 hover:bg-emerald-700 mb-2">
+                    Success
+                  </Badge>
+                  <p className="text-sm text-emerald-900 font-medium">
+                    {successMessage}
+                  </p>
                 </div>
               </div>
             </div>
@@ -295,8 +311,12 @@ export function PhotoUploadWithID() {
               <div className="flex items-center gap-3">
                 <X className="h-5 w-5 text-red-600" />
                 <div className="flex-1">
-                  <Badge className="bg-red-600 hover:bg-red-700 mb-2">Failed</Badge>
-                  <p className="text-sm text-red-900 font-medium">{failureMessage}</p>
+                  <Badge className="bg-red-600 hover:bg-red-700 mb-2">
+                    Failed
+                  </Badge>
+                  <p className="text-sm text-red-900 font-medium">
+                    {failureMessage}
+                  </p>
                 </div>
               </div>
             </div>
@@ -360,13 +380,15 @@ export function PhotoUploadWithID() {
 
           {isCameraActive && (
             <div className="space-y-4">
-              <div className="photo-upload-camera">
+              <div
+               className="photo-upload-camera"
+               >
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
                   muted
-                  className="w-full h-auto block bg-black"
+                  className="w-full h-full block bg-black aspect-square"
                 />
                 <div className="absolute inset-0 border-2 border-primary/20 rounded-2xl pointer-events-none" />
               </div>
@@ -391,7 +413,7 @@ export function PhotoUploadWithID() {
 
           {preview && (
             <div className="space-y-4">
-              <div className="photo-upload-preview group relative">
+              <div className="photo-upload-preview group relative ">
                 <img
                   src={preview}
                   alt="Preview"
