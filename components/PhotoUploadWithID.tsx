@@ -421,14 +421,6 @@ export function PhotoUploadWithID() {
                   )}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-300 rounded-2xl" />
-
-                {/* Scanning animation overlay */}
-                {isSubmitting && (
-                  <div className="scan-overlay rounded-2xl">
-                    <div className="scan-line" />
-                    <div className="absolute inset-0 bg-linear-to-b from-primary/10 via-primary/5 to-transparent opacity-60 rounded-2xl" />
-                  </div>
-                )}
               </div>
 
               <div className="flex gap-3">
