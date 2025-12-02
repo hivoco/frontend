@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "Amway Leadership Summit",
   description: "Capture and upload photos at the Amway Leadership Summit. Professional imaging with stunning modern UI.",
   icons: {
