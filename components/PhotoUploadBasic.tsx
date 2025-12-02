@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Camera, Upload, X, Check } from "lucide-react";
+import { Camera, Upload, X, Check, AlertCircle } from "lucide-react";
 import { usePhotoCapture } from "@/hooks/usePhotoCapture";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { searchFace } from "@/lib/fetch";
+import ImageDisplay from "./ImageDisplay";
 
 const loadingMessages = [
   "Analyzing image...",
@@ -36,6 +38,8 @@ export function PhotoUploadBasic() {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingIndex, setLoadingIndex] = useState(0);
+  const [imageArray, setImageArray] = useState([]);
+  const [showNoImagesMessage, setShowNoImagesMessage] = useState(false);
   const {
     preview,
     file,
@@ -57,6 +61,17 @@ export function PhotoUploadBasic() {
 
     return () => clearInterval(interval);
   }, [isSubmitting]);
+
+  // Auto-hide "No Images" message after 3 seconds
+  useEffect(() => {
+    if (!showNoImagesMessage) return;
+
+    const timer = setTimeout(() => {
+      setShowNoImagesMessage(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [showNoImagesMessage]);
 
   // Connect stream when video element becomes available
   useEffect(() => {
@@ -173,6 +188,9 @@ export function PhotoUploadBasic() {
     try {
       const response = await searchFace(file);
       if (response.results.length > 0) {
+        setImageArray(response.results);
+      } else {
+        setShowNoImagesMessage(true);
       }
       reset();
     } catch (err) {
@@ -181,6 +199,10 @@ export function PhotoUploadBasic() {
       setIsSubmitting(false);
     }
   };
+
+  if(imageArray.length > 0) {
+    return <ImageDisplay images={imageArray} />;
+  }
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -201,6 +223,18 @@ export function PhotoUploadBasic() {
                 <span className="h-2 w-2 rounded-full bg-destructive" />
                 {error}
               </p>
+            </div>
+          )}
+
+          {showNoImagesMessage && (
+            <div className="rounded-2xl bg-amber-50/80 p-4 border border-amber-200/60 animate-in fade-in">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+                <div className="flex-1">
+                  <Badge className="bg-amber-600 hover:bg-amber-700 mb-2">No Images</Badge>
+                  <p className="text-sm text-amber-900 font-medium">No matching faces found. Try uploading another photo.</p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -316,7 +350,7 @@ export function PhotoUploadBasic() {
               <div className="flex gap-3">
                 <Button
                   onClick={handleSubmit}
-                  disabled={isSubmitting || isLoading || !onPhotoSubmit}
+                  disabled={isSubmitting || isLoading }
                   className="flex-1 h-12 rounded-2xl font-semibold gap-2 bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (

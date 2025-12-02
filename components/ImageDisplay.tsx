@@ -1,53 +1,61 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
-import JSZip from 'jszip';
+import JSZip from "jszip";
 
-const images = [
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-  "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-  "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-  "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-];
+// const images = [
+//   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+//   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+//   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+//   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+//   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
+//   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+//   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+//   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+//   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+//   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
+//   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+//   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+//   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+//   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+//   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
+// ];
 
-export default function ImageDisplay() {
+type imgItem = {
+  image_url: string;
+};
+
+type Props = {
+  images: imgItem[];
+};
+
+export default function ImageDisplay({ images }: Props) {
   const [downloading, setDownloading] = useState(false);
 
   const downloadAll = async () => {
     setDownloading(true);
     try {
       const zip = new JSZip();
-      
+
       await Promise.all(
-        images.map(async (url, index) => {
-          const response = await fetch(url);
+        images.map(async (item, index) => {
+          const response = await fetch(item.image_url);
           const blob = await response.blob();
           zip.file(`image-${index + 1}.jpg`, blob);
         })
       );
 
-      const content = await zip.generateAsync({ type: 'blob' });
-      const link = document.createElement('a');
+      const content = await zip.generateAsync({ type: "blob" });
+      const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
-      link.download = 'images.zip';
+      link.download = "images.zip";
       link.click();
       URL.revokeObjectURL(link.href);
     } catch (error) {
-      console.error('Download failed:', error);
+      console.error("Download failed:", error);
     } finally {
       setDownloading(false);
     }
@@ -58,7 +66,9 @@ export default function ImageDisplay() {
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary mb-2">Your Photos</h2>
-          <p className="text-muted-foreground">All your captured photos from the Amway Leadership Summit</p>
+          <p className="text-muted-foreground">
+            All your captured photos from the Amway Leadership Summit
+          </p>
         </div>
         <Button
           onClick={downloadAll}
@@ -80,13 +90,13 @@ export default function ImageDisplay() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {images.map((src, i) => (
+        {images.map((item, i) => (
           <div
             key={i}
             className="relative w-full h-40 rounded-xl overflow-hidden border border-primary/20 shadow-md hover:shadow-xl hover:border-primary/40 transition-all group"
           >
             <Image
-              src={src}
+              src={item.image_url}
               alt="img"
               fill
               className="object-cover group-hover:scale-110 transition-all duration-300"

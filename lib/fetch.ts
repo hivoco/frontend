@@ -1,17 +1,7 @@
-const BASE_API_URL = "http://localhost:8000"
-
-// const updateCSVrecord = (input) => {
-//     try {
-//         const res = fetch(BASE_API_URL + "/update-csv-record", {
-//             method: "POST",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify(input)
-//         })
-//     } catch (err: unknown) {
-//         console.log(err)
-//     }
-// }
-
+const BASE_API_URL =
+    //  "http://localhost:8000"
+    "https://api.legacylens.me"
+    
 
 export const searchFace = async (file: File) => {
     try {

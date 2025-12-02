@@ -5,6 +5,7 @@ import { Camera, Upload, X, Check } from "lucide-react";
 import { usePhotoCapture } from "@/hooks/usePhotoCapture";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { updateCSVrecord } from "@/lib/fetch";
 
@@ -30,6 +31,8 @@ export function PhotoUploadWithID() {
   const [adaNumber, setAdaNumber] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
   const [csvOption, setCsvOption] = useState("tailand_data_bangkok");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [failureMessage, setFailureMessage] = useState<string | null>(null);
   const {
     preview,
     file,
@@ -166,6 +169,16 @@ export function PhotoUploadWithID() {
         phoneNumber,
         csvOption
       );
+      
+      if(response.status==="success"){
+        setSuccessMessage(response.message);
+        setFailureMessage(null);
+        setTimeout(() => setSuccessMessage(null), 4000);
+      } else {
+        setFailureMessage(response.message || "Failed to update record");
+        setSuccessMessage(null);
+        setTimeout(() => setFailureMessage(null), 4000);
+      }
 
       reset();
       setAdaNumber(null);
@@ -203,7 +216,7 @@ export function PhotoUploadWithID() {
                 disabled={isSubmitting}
                 required
                 pattern="[A-Za-z0-9\-]+"
-                minLength={3}
+                minLength={1}
                 maxLength={20}
                 title="ADA number must be 3-20 characters and contain only letters, numbers, and hyphens"
                 className="w-full px-4 py-3 rounded-2xl border border-primary/20 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300 bg-white/50 placeholder:text-muted-foreground/50 font-medium"
@@ -262,6 +275,30 @@ export function PhotoUploadWithID() {
                 <span className="h-2 w-2 rounded-full bg-destructive" />
                 {error}
               </p>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="rounded-2xl bg-emerald-50/80 p-4 border border-emerald-200/60 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-3">
+                <Check className="h-5 w-5 text-emerald-600" />
+                <div className="flex-1">
+                  <Badge className="bg-emerald-600 hover:bg-emerald-700 mb-2">Success</Badge>
+                  <p className="text-sm text-emerald-900 font-medium">{successMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {failureMessage && (
+            <div className="rounded-2xl bg-red-50/80 p-4 border border-red-200/60 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-3">
+                <X className="h-5 w-5 text-red-600" />
+                <div className="flex-1">
+                  <Badge className="bg-red-600 hover:bg-red-700 mb-2">Failed</Badge>
+                  <p className="text-sm text-red-900 font-medium">{failureMessage}</p>
+                </div>
+              </div>
             </div>
           )}
 
