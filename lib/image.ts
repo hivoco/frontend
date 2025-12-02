@@ -4,7 +4,7 @@
 
 export const IMAGE_CONFIG = {
   allowedTypes: ["image/jpeg", "image/png", "image/webp"],
-  maxSize: 5 * 1024 * 1024, // 5MB
+  maxSize: 10 * 1024 * 1024, // 10MB
   maxWidth: 1920,
   maxHeight: 1440,
   quality: 0.85,

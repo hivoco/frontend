@@ -229,7 +229,7 @@ export function PhotoUpload({
                     Drag & drop or click
                   </p>
                   <p className="text-xs text-muted-foreground/60 mt-2 tracking-wide">
-                    JPEG, PNG, WebP • Max 5MB
+                    JPEG, PNG, WebP • Max 10MB
                   </p>
                 </div>
               </button>

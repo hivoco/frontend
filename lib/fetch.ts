@@ -7,7 +7,7 @@ export const searchFace = async (file: File) => {
     try {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await fetch(BASE_API_URL + "/search-face?top_k=20&similarity_threshold=0.4", {
+        const response = await fetch(BASE_API_URL + "/search-face?top_k=6&similarity_threshold=0.4", {
             method: "POST",
             body: formData
         })

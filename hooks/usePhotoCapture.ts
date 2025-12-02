@@ -15,7 +15,7 @@ interface UsePhotoCaptureReturn extends PhotoCaptureState {
 }
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export function usePhotoCapture(): UsePhotoCaptureReturn {
   const [state, setState] = useState<PhotoCaptureState>({
@@ -30,7 +30,8 @@ export function usePhotoCapture(): UsePhotoCaptureReturn {
       return "File must be JPEG, PNG, or WebP format";
     }
     if (file.size > MAX_FILE_SIZE) {
-      return "File size must be less than 5MB";
+      const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+      return `File size must be less than 10MB. Your file is ${fileSizeMB}MB`;
     }
     return null;
   }, []);

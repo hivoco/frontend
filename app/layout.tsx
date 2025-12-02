@@ -14,8 +14,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Amway Leadership Summit | Photo Capture",
+  title: "Amway Leadership Summit",
   description: "Capture and upload photos at the Amway Leadership Summit. Professional imaging with stunning modern UI.",
+  icons: {
+    icon: "/amway-svg.svg",
+    apple: "/amway-svg.svg",
+  },
+  openGraph: {
+    title: "Amway Leadership Summit",
+    description: "Capture and upload photos at the Amway Leadership Summit",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://qas.legacylens.me/",
+    siteName: "Amway Leadership Summit",
+    images: [
+      {
+        url: "/amway-svg.svg",
+        width: 200,
+        height: 200,
+        alt: "Amway Logo",
+        type: "image/svg+xml",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Amway Leadership Summit | Photo Capture",
+    description: "Capture and upload photos at the Amway Leadership Summit.",
+    images: ["/amway-svg.svg"],
+  },
 };
 
 export default function RootLayout({

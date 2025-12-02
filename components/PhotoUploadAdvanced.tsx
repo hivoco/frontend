@@ -185,7 +185,7 @@ export function PhotoUploadAdvanced({
                 <Upload className="h-8 w-8 text-muted-foreground" />
                 <div className="text-center">
                   <p className="text-sm font-medium">Choose from device</p>
-                  <p className="text-xs text-muted-foreground">JPEG, PNG, or WebP (max 5MB)</p>
+                  <p className="text-xs text-muted-foreground">JPEG, PNG, or WebP (max 10MB)</p>
                 </div>
               </button>
 
