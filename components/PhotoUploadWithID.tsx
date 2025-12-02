@@ -37,7 +37,7 @@ export function PhotoUploadWithID() {
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [adaNumber, setAdaNumber] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
-  const [csvOption, setCsvOption] = useState("tailand_data_phuket");
+  const [csvOption, setCsvOption] = useState("thailand_data_phuket");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [failureMessage, setFailureMessage] = useState<string | null>(null);
   const {
@@ -190,7 +190,7 @@ export function PhotoUploadWithID() {
       reset();
       setAdaNumber(null);
       setPhoneNumber(null);
-      setCsvOption("tailand_data_phuket");
+      setCsvOption("thailand_data_phuket");
     } catch (err) {
       console.error("Failed to submit photo:", err);
     } finally {
@@ -270,10 +270,10 @@ export function PhotoUploadWithID() {
                 required
                 className="w-full px-4 py-3 rounded-2xl border border-primary/20 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300 bg-white/50 text-foreground font-medium appearance-none cursor-pointer"
               >
-                {/* <option value="tailand_data_bangkok">
+                {/* <option value="thailand_data_bangkok">
                   Thailand Data - Bangkok
                 </option> */}
-                <option value="tailand_data_phuket">
+                <option value="thailand_data_phuket">
                   Thailand Data - Phuket
                 </option>
               </select>

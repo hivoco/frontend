@@ -231,14 +231,14 @@ export function PhotoUploadBasic() {
           )}
 
           {apiError && (
-            <div className="rounded-2xl bg-destructive/10 p-4 border border-destructive/20 animate-in fade-in">
+            <div className="rounded-2xl bg-green-50/80 p-4 border border-green-200/60 animate-in fade-in">
               <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+                <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
                 <div className="flex-1">
-                  <Badge className="bg-destructive hover:bg-destructive/90 mb-2">
-                    Error
+                  <Badge className="bg-green-600 hover:bg-green-700 mb-2">
+                    Not Found
                   </Badge>
-                  <p className="text-sm text-destructive font-medium">
+                  <p className="text-sm text-green-900 font-medium">
                     {apiError}
                   </p>
                 </div>
