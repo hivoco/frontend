@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { searchFace } from "@/lib/fetch";
 import ImageDisplay from "./ImageDisplay";
+import Image from "next/image";
 
 const loadingMessages = [
   "Analyzing image...",
@@ -40,6 +41,7 @@ export function PhotoUploadBasic() {
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [imageArray, setImageArray] = useState([]);
   const [showNoImagesMessage, setShowNoImagesMessage] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const {
     preview,
     file,
@@ -185,6 +187,7 @@ export function PhotoUploadBasic() {
     if (!file) return;
 
     setIsSubmitting(true);
+    setApiError(null);
     try {
       const response = await searchFace(file);
       if (response.results.length > 0) {
@@ -195,6 +198,7 @@ export function PhotoUploadBasic() {
       reset();
     } catch (err) {
       console.error("Failed to submit photo:", err);
+      setApiError("Image not found");
     } finally {
       setIsSubmitting(false);
     }
@@ -223,6 +227,22 @@ export function PhotoUploadBasic() {
                 <span className="h-2 w-2 rounded-full bg-destructive" />
                 {error}
               </p>
+            </div>
+          )}
+
+          {apiError && (
+            <div className="rounded-2xl bg-destructive/10 p-4 border border-destructive/20 animate-in fade-in">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+                <div className="flex-1">
+                  <Badge className="bg-destructive hover:bg-destructive/90 mb-2">
+                    Error
+                  </Badge>
+                  <p className="text-sm text-destructive font-medium">
+                    {apiError}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -332,13 +352,16 @@ export function PhotoUploadBasic() {
           {preview && (
             <div className="space-y-4">
               <div className="photo-upload-preview group relative ">
-                <img
+                <Image
                   src={preview}
                   alt="Preview"
+                  width={400}
+                  height={400}
                   className={cn(
-                    "w-full h-full object-cover transition-all duration-300 rounded-2xl",
+                    "w-full h-full object-contain transition-all duration-300 rounded-2xl",
                     isSubmitting && "opacity-75 brightness-95"
                   )}
+                  priority
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-300 rounded-2xl" />
 

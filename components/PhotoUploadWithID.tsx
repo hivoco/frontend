@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { Camera, Upload, X, Check } from "lucide-react";
 import { usePhotoCapture } from "@/hooks/usePhotoCapture";
 import { Button } from "@/components/ui/button";
@@ -412,11 +413,13 @@ export function PhotoUploadWithID() {
           {preview && (
             <div className="space-y-4">
               <div className="photo-upload-preview group relative ">
-                <img
+                <Image
                   src={preview}
                   alt="Preview"
+                  width={400}
+                  height={400}
                   className={cn(
-                    "w-full h-full object-cover transition-all duration-300 rounded-2xl",
+                    "w-full h-full object-contain transition-all duration-300 rounded-2xl",
                     isSubmitting && "opacity-75 brightness-95"
                   )}
                 />
