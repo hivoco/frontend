@@ -55,7 +55,7 @@ export default function Home() {
           </div>
         )}
 
-        {currentView === "view" && (
+        {/* {currentView === "view" && (
           <div className="flex flex-col items-center justify-center gap-4">
             <ImageDisplay />
             <button
@@ -65,7 +65,7 @@ export default function Home() {
               ← Back to Home
             </button>
           </div>
-        )}
+        )} */}
       </main>
     </div>
   );
