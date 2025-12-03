@@ -78,18 +78,18 @@ export function ZipUpload() {
     if (!file.name.endsWith(".zip") && file.type !== "application/zip") {
       setUploadState((prev) => ({
         ...prev,
-        errorMessage: "Please select a valid ZIP file (.zip)",
+        errorMessage: `Invalid file type. Please select a ZIP file (you selected: ${file.name})`,
       }));
       return;
     }
 
-    const maxSize = 10 * 1024 * 1024 * 1024; // 10GB
+    const maxSize = 25 * 1024 * 1024 * 1024; // 25GB
     if (file.size > maxSize) {
       setUploadState((prev) => ({
         ...prev,
-        errorMessage: `File size must be less than 10GB (Your file: ${formatFileSize(
+        errorMessage: `File is too large. Maximum size is 25GB, but your file is ${formatFileSize(
           file.size
-        )})`,
+        )}. Please reduce the file size and try again.`,
       }));
       return;
     }
@@ -125,8 +125,20 @@ export function ZipUpload() {
         }));
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Upload failed";
+      let errorMessage = "Upload failed. Please try again.";
+
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          errorMessage = "Upload was cancelled. Click 'Select ZIP File' to try again.";
+        } else if (error.message.includes("Network")) {
+          errorMessage = "Network error. Please check your internet connection and try again.";
+        } else if (error.message.includes("timeout")) {
+          errorMessage = "Upload took too long. Please try again with a smaller file or faster connection.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       console.error("Upload error:", errorMessage);
 
       setUploadState((prev) => ({
@@ -250,7 +262,7 @@ export function ZipUpload() {
                   <Upload className="w-4 h-4 text-primary shrink-0" />
                   <span>
                     Maximum file size:{" "}
-                    <strong className="text-primary">10 GB</strong>
+                    <strong className="text-primary">25 GB</strong>
                   </span>
                 </div>
               </div>
@@ -261,11 +273,15 @@ export function ZipUpload() {
 
       {/* Error Alert */}
       {uploadState.errorMessage && (
-        <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <p className="text-sm font-semibold text-destructive flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            {uploadState.errorMessage}
-          </p>
+        <div className="rounded-xl bg-destructive/10 border border-destructive/30 p-4 animate-in fade-in slide-in-from-top-2 duration-300 shadow-md">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-destructive text-sm leading-relaxed">
+                {uploadState.errorMessage}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 

@@ -33,10 +33,11 @@ interface PhotoUploadBasicProps {
 
 export function PhotoUploadBasic() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isWebcamModalOpen, setIsWebcamModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [imageArray, setImageArray] = useState([]);
@@ -47,6 +48,7 @@ export function PhotoUploadBasic() {
     file,
     error,
     isLoading,
+    isMobile,
     handleFileSelect,
     handleCameraCapture,
     clearPhoto,
@@ -75,9 +77,9 @@ export function PhotoUploadBasic() {
     return () => clearTimeout(timer);
   }, [showNoImagesMessage]);
 
-  // Connect stream when video element becomes available
+  // Connect stream when video element becomes available (PC webcam modal)
   useEffect(() => {
-    if (!isCameraActive || !streamRef.current) {
+    if (!isWebcamModalOpen || !streamRef.current) {
       return;
     }
 
@@ -118,20 +120,30 @@ export function PhotoUploadBasic() {
     return () => {
       video.removeEventListener("loadedmetadata", handleLoadedMetadata);
     };
-  }, [isCameraActive]);
+  }, [isWebcamModalOpen]);
 
-  const startCamera = async () => {
+  // Handle camera button click - different behavior for mobile vs PC
+  const handleCameraClick = () => {
+    if (isMobile) {
+      // On mobile: use native camera input
+      cameraInputRef.current?.click();
+    } else {
+      // On PC: open webcam modal
+      openWebcam();
+    }
+  };
+
+  const openWebcam = async () => {
     try {
-      console.log("Starting camera...");
+      console.log("Starting webcam...");
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
         audio: false,
       });
 
-      console.log("Stream obtained, storing and activating camera...");
+      console.log("Stream obtained, opening webcam modal...");
       streamRef.current = stream;
-      setIsCameraActive(true);
-      console.log("Camera state set, useEffect will handle stream connection");
+      setIsWebcamModalOpen(true);
     } catch (err) {
       const error = err as DOMException;
       console.error("Camera error:", error.name, error.message);
@@ -151,17 +163,17 @@ export function PhotoUploadBasic() {
     }
   };
 
-  const capturePhoto = async () => {
+  const capturePhotoFromWebcam = async () => {
     if (!videoRef.current) return;
 
     const stream = videoRef.current.srcObject as MediaStream | null;
     if (stream) {
       await handleCameraCapture(stream);
-      stopCamera();
+      closeWebcam();
     }
   };
 
-  const stopCamera = () => {
+  const closeWebcam = () => {
     // Stop all tracks from the stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -173,10 +185,17 @@ export function PhotoUploadBasic() {
       videoRef.current.srcObject = null;
     }
 
-    setIsCameraActive(false);
+    setIsWebcamModalOpen(false);
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      handleFileSelect(selectedFile);
+    }
+  };
+
+  const handleCameraInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       handleFileSelect(selectedFile);
@@ -209,8 +228,8 @@ export function PhotoUploadBasic() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <Card className="border-primary/30 shadow-2xl hover:shadow-3xl card-lift overflow-hidden backdrop-blur-sm bg-white/95">
+    <div className=" max-w-md mx-auto ">
+      <Card className="border-primary/30 shadow-2xl hover:shadow-3xl card-lift backdrop-blur-sm bg-white/95">
         <CardHeader className="bg-linear-to-br from-primary/10 via-purple-50 to-accent/5 border-b border-primary/20 pb-8 pt-8">
           <CardTitle className="text-3xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
             Upload a photo and get all matching images
@@ -231,14 +250,14 @@ export function PhotoUploadBasic() {
           )}
 
           {apiError && (
-            <div className="rounded-2xl bg-green-50/80 p-4 border border-green-200/60 animate-in fade-in">
+            <div className="rounded-2xl bg-emerald-50/80 p-4 border border-emerald-200/60 animate-in fade-in">
               <div className="flex items-center gap-3">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                <AlertCircle className="h-5 w-5 text-emerald-600 flex-shrink-0" />
                 <div className="flex-1">
-                  <Badge className="bg-green-600 hover:bg-green-700 mb-2">
-                    Not Found
+                  <Badge className="bg-emerald-600 hover:bg-emerald-700 mb-2 text-white">
+                    Info
                   </Badge>
-                  <p className="text-sm text-green-900 font-medium">
+                  <p className="text-sm text-emerald-900 font-medium">
                     {apiError}
                   </p>
                 </div>
@@ -262,17 +281,17 @@ export function PhotoUploadBasic() {
             </div>
           )}
 
-          {!preview && !isCameraActive && (
-            <div className="space-y-4 ">
+          {!preview && !isWebcamModalOpen && (
+            <div className="space-y-4">
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
                 className={cn(
                   "photo-upload-input mx-auto",
-                  isLoading && "opacity-50 cursor-not-allowed "
+                  isLoading && "opacity-50 cursor-not-allowed"
                 )}
               >
-                <div className="relative ">
+                <div className="relative">
                   <div className="absolute inset-0 bg-linear-to-br from-primary/30 to-accent/20 rounded-full blur-2xl animate-pulse" />
                   <Upload className="relative h-12 w-12 text-primary transition-all duration-300 drop-shadow-lg" />
                 </div>
@@ -298,7 +317,7 @@ export function PhotoUploadBasic() {
               </div>
 
               <Button
-                onClick={startCamera}
+                onClick={handleCameraClick}
                 disabled={isLoading}
                 className="w-full gap-2 h-12 rounded-2xl font-semibold bg-linear-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary"
               >
@@ -315,43 +334,58 @@ export function PhotoUploadBasic() {
                 className="hidden"
                 aria-hidden="true"
               />
+
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleCameraInputChange}
+                disabled={isLoading}
+                className="hidden"
+                aria-hidden="true"
+              />
             </div>
           )}
 
-          {isCameraActive && (
-            <div className="space-y-4">
-              <div className="photo-upload-camera">
+          {/* Webcam Modal for PC */}
+          {isWebcamModalOpen && (
+            <div className="z-50 flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+              <div className="text-center w-full max-w-3xl animate-in fade-in duration-200 will-change-contents">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
                   muted
-                  className="w-full h-full block bg-black aspect-square"
+                  className="w-full h-auto max-h-[70vh] object-contain rounded-3xl shadow-2xl mb-6 border-4 border-primary/30"
                 />
-                <div className="absolute inset-0 border-2 border-primary/20 rounded-2xl pointer-events-none" />
-              </div>
 
-              <div className="flex gap-3">
-                <Button
-                  onClick={capturePhoto}
-                  disabled={isLoading}
-                  className="flex-1 h-12 rounded-2xl font-semibold bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary"
-                >
-                  Capture
-                </Button>
-                <Button
-                  onClick={stopCamera}
-                  className="flex-1 h-12 rounded-2xl font-semibold bg-muted/80 hover:bg-muted border-2 border-destructive/20 hover:border-destructive/40 transition-all duration-300 text-foreground"
-                >
-                  Cancel
-                </Button>
+                <canvas ref={canvasRef} className="hidden" />
+
+                <div className="flex gap-3 justify-center flex-wrap">
+                  <Button
+                    onClick={capturePhotoFromWebcam}
+                    disabled={isLoading}
+                    className="h-12 px-6 sm:px-8 rounded-2xl font-semibold bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary"
+                  >
+                    <Camera className="h-5 w-5 mr-2" />
+                    Capture Photo
+                  </Button>
+                  <Button
+                    onClick={closeWebcam}
+                    className="h-12 px-6 sm:px-8 rounded-2xl font-semibold bg-destructive/80 hover:bg-destructive text-white transition-all duration-300"
+                  >
+                    <X className="h-5 w-5 mr-2" />
+                    Close
+                  </Button>
+                </div>
               </div>
             </div>
           )}
 
           {preview && (
             <div className="space-y-4">
-              <div className="photo-upload-preview group relative ">
+              <div className="photo-upload-preview group relative">
                 <Image
                   src={preview}
                   alt="Preview"

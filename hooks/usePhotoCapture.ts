@@ -10,12 +10,21 @@ interface PhotoCaptureState {
 interface UsePhotoCaptureReturn extends PhotoCaptureState {
   handleFileSelect: (file: File) => Promise<void>;
   handleCameraCapture: (stream: MediaStream) => Promise<void>;
+  isMobile: boolean;
   clearPhoto: () => void;
   reset: () => void;
 }
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+// Detect if device is mobile
+const detectMobile = (): boolean => {
+  if (typeof navigator === "undefined") return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+};
 
 export function usePhotoCapture(): UsePhotoCaptureReturn {
   const [state, setState] = useState<PhotoCaptureState>({
@@ -24,6 +33,8 @@ export function usePhotoCapture(): UsePhotoCaptureReturn {
     error: null,
     isLoading: false,
   });
+
+  const isMobile = detectMobile();
 
   const validateFile = useCallback((file: File): string | null => {
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -149,6 +160,7 @@ export function usePhotoCapture(): UsePhotoCaptureReturn {
 
   return {
     ...state,
+    isMobile,
     handleFileSelect,
     handleCameraCapture,
     clearPhoto,

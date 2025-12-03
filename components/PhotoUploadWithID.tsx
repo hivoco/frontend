@@ -29,10 +29,11 @@ const loadingMessages = [
 export function PhotoUploadWithID() {
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isWebcamModalOpen, setIsWebcamModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [adaNumber, setAdaNumber] = useState<string | null>(null);
@@ -45,6 +46,7 @@ export function PhotoUploadWithID() {
     file,
     error,
     isLoading,
+    isMobile,
     handleFileSelect,
     handleCameraCapture,
     clearPhoto,
@@ -62,9 +64,9 @@ export function PhotoUploadWithID() {
     return () => clearInterval(interval);
   }, [isSubmitting]);
 
-  // Connect stream when video element becomes available
+  // Connect stream when video element becomes available (PC webcam modal)
   useEffect(() => {
-    if (!isCameraActive || !streamRef.current) {
+    if (!isWebcamModalOpen || !streamRef.current) {
       return;
     }
 
@@ -79,7 +81,6 @@ export function PhotoUploadWithID() {
 
     // Wait for video to load metadata
     const handleLoadedMetadata = () => {
-      // Calculate dimensions
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
       const constrainedWidth = 320;
@@ -98,20 +99,30 @@ export function PhotoUploadWithID() {
     return () => {
       video.removeEventListener("loadedmetadata", handleLoadedMetadata);
     };
-  }, [isCameraActive]);
+  }, [isWebcamModalOpen]);
 
-  const startCamera = async () => {
+  // Handle camera button click - different behavior for mobile vs PC
+  const handleCameraClick = () => {
+    if (isMobile) {
+      // On mobile: use native camera input
+      cameraInputRef.current?.click();
+    } else {
+      // On PC: open webcam modal
+      openWebcam();
+    }
+  };
+
+  const openWebcam = async () => {
     try {
-      console.log("Starting camera...");
+      console.log("Starting webcam...");
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
         audio: false,
       });
 
-      console.log("Stream obtained, storing and activating camera...");
+      console.log("Stream obtained, opening webcam modal...");
       streamRef.current = stream;
-      setIsCameraActive(true);
-      console.log("Camera state set, useEffect will handle stream connection");
+      setIsWebcamModalOpen(true);
     } catch (err) {
       const error = err as DOMException;
       console.error("Camera error:", error.name, error.message);
@@ -131,17 +142,17 @@ export function PhotoUploadWithID() {
     }
   };
 
-  const capturePhoto = async () => {
+  const capturePhotoFromWebcam = async () => {
     if (!videoRef.current) return;
 
     const stream = videoRef.current.srcObject as MediaStream | null;
     if (stream) {
       await handleCameraCapture(stream);
-      stopCamera();
+      closeWebcam();
     }
   };
 
-  const stopCamera = () => {
+  const closeWebcam = () => {
     // Stop all tracks from the stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -153,10 +164,17 @@ export function PhotoUploadWithID() {
       videoRef.current.srcObject = null;
     }
 
-    setIsCameraActive(false);
+    setIsWebcamModalOpen(false);
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      handleFileSelect(selectedFile);
+    }
+  };
+
+  const handleCameraInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       handleFileSelect(selectedFile);
@@ -180,11 +198,11 @@ export function PhotoUploadWithID() {
       if (response.status === "success") {
         setSuccessMessage(response.message);
         setFailureMessage(null);
-        setTimeout(() => setSuccessMessage(null), 4000);
+        setTimeout(() => setSuccessMessage(null), 5000);
       } else {
-        setFailureMessage(response.message || "Failed to update record");
+        setFailureMessage("Failed to update record");
         setSuccessMessage(null);
-        setTimeout(() => setFailureMessage(null), 4000);
+        setTimeout(() => setFailureMessage(null), 5000);
       }
 
       reset();
@@ -193,6 +211,10 @@ export function PhotoUploadWithID() {
       setCsvOption("thailand_data_phuket");
     } catch (err) {
       console.error("Failed to submit photo:", err);
+      const errorMsg = err instanceof Error ? err.message : "Unable to submit. Please try again.";
+      setFailureMessage(errorMsg);
+      setSuccessMessage(null);
+      setTimeout(() => setFailureMessage(null), 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -308,14 +330,14 @@ export function PhotoUploadWithID() {
           )}
 
           {failureMessage && (
-            <div className="rounded-2xl bg-red-50/80 p-4 border border-red-200/60 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="rounded-2xl bg-yellow-50/80 p-4 border border-yellow-200/60 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="flex items-center gap-3">
-                <X className="h-5 w-5 text-red-600" />
+                <X className="h-5 w-5 text-yellow-600" />
                 <div className="flex-1">
-                  <Badge className="bg-red-600 hover:bg-red-700 mb-2">
-                    Failed
+                  <Badge className="bg-yellow-500 hover:bg-yellow-600 mb-2 text-white font-semibold">
+                    Unable to Submit
                   </Badge>
-                  <p className="text-sm text-red-900 font-medium">
+                  <p className="text-sm text-yellow-900 font-medium">
                     {failureMessage}
                   </p>
                 </div>
@@ -323,7 +345,7 @@ export function PhotoUploadWithID() {
             </div>
           )}
 
-          {!preview && !isCameraActive && (
+          {!preview && !isWebcamModalOpen && (
             <div className="space-y-4 ">
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -359,7 +381,7 @@ export function PhotoUploadWithID() {
               </div>
 
               <Button
-                onClick={startCamera}
+                onClick={handleCameraClick}
                 disabled={isLoading}
                 className="w-full gap-2 h-12 rounded-2xl font-semibold bg-linear-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary"
               >
@@ -376,36 +398,53 @@ export function PhotoUploadWithID() {
                 className="hidden"
                 aria-hidden="true"
               />
+
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleCameraInputChange}
+                disabled={isLoading}
+                className="hidden"
+                aria-hidden="true"
+              />
             </div>
           )}
 
-          {isCameraActive && (
-            <div className="space-y-4">
-              <div className="photo-upload-camera">
+          {/* Webcam Modal for PC */}
+          {isWebcamModalOpen && (
+            <div className="z-50 flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+              <div className="text-center w-full max-w-3xl animate-in fade-in duration-200 will-change-contents">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
                   muted
-                  className="w-full h-full block bg-black aspect-square"
+                  className="w-full h-auto max-h-[70vh] object-contain rounded-3xl shadow-2xl mb-6 border-4 border-primary/30"
                 />
-                <div className="absolute inset-0 border-2 border-primary/20 rounded-2xl pointer-events-none" />
-              </div>
+                <canvas
+                  ref={canvasRef}
+                  className="hidden"
+                />
 
-              <div className="flex gap-3">
-                <Button
-                  onClick={capturePhoto}
-                  disabled={isLoading}
-                  className="flex-1 h-12 rounded-2xl font-semibold bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary"
-                >
-                  Capture
-                </Button>
-                <Button
-                  onClick={stopCamera}
-                  className="flex-1 h-12 rounded-2xl font-semibold bg-muted/80 hover:bg-muted border-2 border-destructive/20 hover:border-destructive/40 transition-all duration-300 text-foreground"
-                >
-                  Cancel
-                </Button>
+                <div className="flex gap-3 justify-center flex-wrap">
+                  <Button
+                    onClick={capturePhotoFromWebcam}
+                    disabled={isLoading}
+                    className="h-12 px-6 sm:px-8 rounded-2xl font-semibold bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 text-white glow-primary"
+                  >
+                    <Camera className="h-5 w-5 mr-2" />
+                    Capture Photo
+                  </Button>
+                  <Button
+                    onClick={closeWebcam}
+                    className="h-12 px-6 sm:px-8 rounded-2xl font-semibold bg-destructive/80 hover:bg-destructive text-white transition-all duration-300"
+                  >
+                    <X className="h-5 w-5 mr-2" />
+                    Close
+                  </Button>
+                </div>
               </div>
             </div>
           )}

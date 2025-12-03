@@ -58,12 +58,24 @@ export const updateCSVrecord = async (file: File, adaNumber: string, phoneNumber
         });
 
         if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
+            return {
+                status: "error",
+                message: `Failed to submit. Server error: ${res.status} ${res.statusText}`
+            };
         }
 
-        return await res.json();
+        const data = await res.json();
+        return {
+            status: "success",
+            message: data.message || "Record updated successfully",
+            data: data
+        };
     } catch (err: unknown) {
         console.error("Upload failed:", err);
-        throw err;
+        const errorMessage = err instanceof Error ? err.message : "Unable to submit. Please check your connection and try again.";
+        return {
+            status: "error",
+            message: errorMessage
+        };
     }
 };

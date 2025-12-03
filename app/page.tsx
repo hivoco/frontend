@@ -97,7 +97,7 @@ export default function Home() {
         )}
 
         {currentView === "upload-photo" && (
-          <div className=" mx-auto">
+          <div className="max-w-md mx-auto">
             <button
               onClick={() => setCurrentView("home")}
               className="mb-6 text-primary hover:text-primary/80 font-semibold flex items-center gap-2 transition-colors"

@@ -114,7 +114,7 @@ frontend/
 
 ### Overview
 
-A production-ready admin dashboard with advanced ZIP file upload component supporting up to **10GB** files with:
+A production-ready admin dashboard with advanced ZIP file upload component supporting up to **25GB** files with:
 - Real-time progress tracking
 - Rotating tips during upload
 - Beautiful modern UI matching design system
@@ -151,7 +151,7 @@ Users can:
 
 - ✅ **Drag & Drop Interface** - Intuitive file selection
 - ✅ **Real-time Progress Tracking** - Visual progress bar with percentage
-- ✅ **10GB File Size Limit** - Perfect for large archives
+- ✅ **25GB File Size Limit** - Perfect for large archives
 - ✅ **Dynamic Tips During Upload** - Rotating helpful tips every 4 seconds
 - ✅ **Cycling Status Messages** - Changes every 2 seconds during upload
 - ✅ **Cancel Upload** - Abort in-progress uploads
@@ -168,7 +168,7 @@ Header with gradient branding
 Main upload card (drag & drop)
     ↓
 Info grid (3 columns):
-├── Max Size: 10 GB
+├── Max Size: 25 GB
 ├── Format: .ZIP
 └── Speed: Real-time
     ↓
@@ -182,7 +182,7 @@ Backend URL configuration (optional)
 **Idle State**:
 - Upload icon with gradient background
 - "Upload Your ZIP File" heading
-- Max size: 10 GB info
+- Max size: 25 GB info
 - Link to fast.com for speed check
 - Select ZIP File button
 
@@ -291,7 +291,7 @@ Your backend should:
 - **Method**: POST
 - **Content-Type**: multipart/form-data
 - **Field Name**: `file`
-- **Max Size**: Handle up to 10GB
+- **Max Size**: Handle up to 25GB
 - **Response**: HTTP 200-299 for success
 
 ### Node.js / Express Example
@@ -471,7 +471,7 @@ fetch('http://localhost:5000/upload', { method: 'POST', body: formData })
 - [ ] Backend accepts POST requests
 - [ ] Backend expects file in field named `file`
 - [ ] Backend returns HTTP 200-299 on success
-- [ ] Backend can handle at least 10GB files
+- [ ] Backend can handle at least 25GB files
 - [ ] Uploads directory exists and is writable
 - [ ] Logging is configured
 
@@ -499,7 +499,7 @@ fetch('http://localhost:5000/upload', { method: 'POST', body: formData })
 
 #### Validation
 - [ ] Backend validates ZIP format
-- [ ] Backend checks file size (max 10GB)
+- [ ] Backend checks file size (max 25GB)
 - [ ] Reject non-ZIP files
 - [ ] Reject corrupted ZIP files
 - [ ] Rate limiting is implemented
@@ -739,9 +739,9 @@ Your deployment is successful when:
 - Check MIME type is application/zip
 
 #### File Size Rejected
-- Default limit is 10GB
+- Default limit is 25GB
 - Verify file size in bytes
-- Check configuration in `components/ZipUpload.tsx` line 128
+- Check configuration in `components/ZipUpload.tsx` line 86
 
 ### Browser Support
 
