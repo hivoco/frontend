@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2, X } from "lucide-react";
+import { Download, Loader2, X, ChevronDown } from "lucide-react";
 import JSZip from "jszip";
 
 type imgItem = {
@@ -14,28 +14,21 @@ type Props = {
   images: imgItem[];
 };
 
+const IMAGES_PER_PAGE = 8;
+
 export default function ImageDisplay({ images }: Props) {
   const [downloading, setDownloading] = useState(false);
   const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [displayCount, setDisplayCount] = useState(IMAGES_PER_PAGE);
 
-  // const images = [
-  //   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-  //   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-  //   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-  //   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-  //   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-  //   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-  //   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-  //   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-  //   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-  //   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-  //   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-  //   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-  //   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-  //   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-  //   "https://images.unsplash.com/photo-1526045612212-70caf35c14df",
-  // ];
+  const displayedImages = images.slice(0, displayCount);
+  const hasMore = displayCount < images.length;
+  const remainingCount = images.length - displayCount;
+
+  const loadMore = () => {
+    setDisplayCount((prev) => Math.min(prev + IMAGES_PER_PAGE, images.length));
+  };
 
   const downloadSingle = async (imageUrl: string, index: number) => {
     setDownloadingIndex(index);
@@ -62,8 +55,6 @@ export default function ImageDisplay({ images }: Props) {
       await Promise.all(
         images.map(async (item, index) => {
           const response = await fetch(item.image_url);
-          // const response = await fetch(item);
-
           const blob = await response.blob();
           zip.file(`image-${index + 1}.jpg`, blob);
         })
@@ -88,13 +79,13 @@ export default function ImageDisplay({ images }: Props) {
         <div>
           <h2 className="text-3xl font-bold text-primary mb-2">Your Photos</h2>
           <p className="text-muted-foreground">
-            All your captured photos from the Amway Leadership Summit
+            All your captured photos from the Amway Leadership Summit ({images.length} {images.length === 1 ? 'photo' : 'photos'})
           </p>
         </div>
         <Button
           onClick={downloadAll}
           disabled={downloading}
-          className="w-full sm:w-auto bg-linear-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
+          className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
         >
           {downloading ? (
             <>
@@ -111,7 +102,7 @@ export default function ImageDisplay({ images }: Props) {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {images.map((item, i) => (
+        {displayedImages.map((item, i) => (
           <div
             key={i}
             className="relative w-full h-40 rounded-xl overflow-hidden border border-primary/20 shadow-md hover:shadow-xl hover:border-primary/40 transition-all group cursor-pointer"
@@ -119,7 +110,6 @@ export default function ImageDisplay({ images }: Props) {
           >
             <Image
               src={item.image_url}
-              // src={item}
               alt="img"
               fill
               className="object-cover group-hover:scale-110 transition-all duration-300"
@@ -144,6 +134,19 @@ export default function ImageDisplay({ images }: Props) {
         ))}
       </div>
 
+      {/* Load More Button */}
+      {hasMore && (
+        <div className="flex justify-center pt-4">
+          <Button
+            onClick={loadMore}
+            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white gap-2 px-8 h-12 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <ChevronDown className="w-5 h-5" />
+            Load More ({remainingCount} remaining)
+          </Button>
+        </div>
+      )}
+
       {/* Expanded Image Modal */}
       {expandedIndex !== null && (
         <div
@@ -155,7 +158,7 @@ export default function ImageDisplay({ images }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={images[expandedIndex].image_url}
+              src={displayedImages[expandedIndex].image_url}
               alt="Expanded"
               fill
               className="object-contain"
@@ -174,7 +177,7 @@ export default function ImageDisplay({ images }: Props) {
             <Button
               onClick={(e) => {
                 e.stopPropagation();
-                downloadSingle(images[expandedIndex].image_url, expandedIndex);
+                downloadSingle(displayedImages[expandedIndex].image_url, expandedIndex);
               }}
               disabled={downloadingIndex === expandedIndex}
               className="absolute bottom-4 right-4 bg-primary/80 hover:bg-primary text-white shadow-lg transition-all backdrop-blur-sm"

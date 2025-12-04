@@ -4,6 +4,7 @@ import { PhotoUploadWithID } from "@/components/PhotoUploadWithID";
 import { PhotoUploadBasic } from "@/components/PhotoUploadBasic";
 import { Suspense, useState } from "react";
 import { ArrowRight, Upload, Images } from "lucide-react";
+import { AdaVideoRetrieval } from "@/components/ADAVideoRetrieval";
 
 type HomeView = "home" | "upload-info" | "upload-photo" | "view-images";
 
@@ -22,22 +23,21 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 ">
               {/* Option 1: Upload Information */}
-              {/* <button
+              <button
                 onClick={() => setCurrentView("upload-info")}
                 className="group relative p-8 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-white to-primary/5 hover:border-primary/60 hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
-                <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative space-y-4">
                   <div className="inline-flex p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
                     <Upload className="h-6 w-6 text-primary" />
                   </div>
                   <div className="text-left">
                     <h2 className="text-2xl font-bold text-foreground mb-2">
-                      Upload Information
+                      Your Personalized Video
                     </h2>
                     <p className="text-muted-foreground mb-4">
-                      Enter your details, upload a photo and update your record
-                      in the database
+                      Like to see your personalized video? Give it a go — Enter your ADA number and get your video!
                     </p>
                   </div>
                   <div className="flex items-center text-primary font-semibold group-hover:gap-3 gap-2 transition-all">
@@ -45,7 +45,7 @@ export default function Home() {
                     <ArrowRight className="h-5 w-5" />
                   </div>
                 </div>
-              </button> */}
+              </button>
 
               {/* Option 2: Upload Photo */}
               <button
@@ -91,7 +91,7 @@ export default function Home() {
                 </div>
               }
             >
-              <PhotoUploadWithID />
+              <AdaVideoRetrieval />
             </Suspense>
           </div>
         )}
