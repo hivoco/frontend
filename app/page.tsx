@@ -20,9 +20,9 @@ export default function Home() {
       <main className="relative w-full">
         {currentView === "home" && (
           <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 ">
               {/* Option 1: Upload Information */}
-              <button
+              {/* <button
                 onClick={() => setCurrentView("upload-info")}
                 className="group relative p-8 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-white to-primary/5 hover:border-primary/60 hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
@@ -45,7 +45,7 @@ export default function Home() {
                     <ArrowRight className="h-5 w-5" />
                   </div>
                 </div>
-              </button>
+              </button> */}
 
               {/* Option 2: Upload Photo */}
               <button

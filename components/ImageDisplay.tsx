@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, X } from "lucide-react";
 import JSZip from "jszip";
 
 type imgItem = {
@@ -17,6 +17,7 @@ type Props = {
 export default function ImageDisplay({ images }: Props) {
   const [downloading, setDownloading] = useState(false);
   const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   // const images = [
   //   "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
@@ -113,7 +114,8 @@ export default function ImageDisplay({ images }: Props) {
         {images.map((item, i) => (
           <div
             key={i}
-            className="relative w-full h-40 rounded-xl overflow-hidden border border-primary/20 shadow-md hover:shadow-xl hover:border-primary/40 transition-all group"
+            className="relative w-full h-40 rounded-xl overflow-hidden border border-primary/20 shadow-md hover:shadow-xl hover:border-primary/40 transition-all group cursor-pointer"
+            onClick={() => setExpandedIndex(i)}
           >
             <Image
               src={item.image_url}
@@ -124,7 +126,10 @@ export default function ImageDisplay({ images }: Props) {
             />
 
             <Button
-              onClick={() => downloadSingle(item.image_url, i)}
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadSingle(item.image_url, i);
+              }}
               disabled={downloadingIndex === i}
               size="icon"
               className="absolute bottom-2 right-2 bg-primary/60 hover:bg-primary text-white rounded-full shadow-lg transition-all"
@@ -138,6 +143,57 @@ export default function ImageDisplay({ images }: Props) {
           </div>
         ))}
       </div>
+
+      {/* Expanded Image Modal */}
+      {expandedIndex !== null && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setExpandedIndex(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={images[expandedIndex].image_url}
+              alt="Expanded"
+              fill
+              className="object-contain"
+            />
+
+            {/* Close Button */}
+            <Button
+              onClick={() => setExpandedIndex(null)}
+              size="icon"
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full shadow-lg transition-all backdrop-blur-sm"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+
+            {/* Download Button */}
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadSingle(images[expandedIndex].image_url, expandedIndex);
+              }}
+              disabled={downloadingIndex === expandedIndex}
+              className="absolute bottom-4 right-4 bg-primary/80 hover:bg-primary text-white shadow-lg transition-all backdrop-blur-sm"
+            >
+              {downloadingIndex === expandedIndex ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Downloading...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
