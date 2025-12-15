@@ -15,33 +15,32 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-  title: "Amway Leadership Summit",
-  description: "Capture and upload photos at the Amway Leadership Summit. Professional imaging with stunning modern UI.",
+  title: "Legacy Lens by HiVoco Studios",
+  description: "Your destination for Go-Diamond & ALS 2025 Personalized Videos - Powered by HiVoco Studios.",
   icons: {
     icon: "/amway-svg.svg",
     apple: "/amway-svg.svg",
   },
   openGraph: {
-    title: "Amway Leadership Summit",
-    description: "Capture and upload photos at the Amway Leadership Summit",
+    title: "Legacy Lens by HiVoco Studios",
+    description: "Your destination for Go-Diamond & ALS 2025 Personalized Videos - Powered by HiVoco Studios.",
     url: process.env.NEXT_PUBLIC_APP_URL || "https://qas.legacylens.me/",
-    siteName: "Amway Leadership Summit",
+    siteName: "Legacy Lens by HiVoco Studios",
     images: [
       {
-        url: "/amway-svg.svg",
-        width: 200,
-        height: 200,
-        alt: "Amway Logo",
-        type: "image/svg+xml",
+        url: "/og-image.jpg", // Change to JPG or PNG
+        width: 1200,
+        height: 630,
+        alt: "Legacy Lens by HiVoco Studios",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Amway Leadership Summit | Photo Capture",
-    description: "Capture and upload photos at the Amway Leadership Summit.",
-    images: ["/amway-svg.svg"],
+    title: "Legacy Lens by HiVoco Studios",
+    description: "Your destination for Go-Diamond & ALS 2025 Personalized Videos - Powered by HiVoco Studios.",
+    images: ["/amway-svg.png"], // Change to JPG or PNG
   },
 };
 
