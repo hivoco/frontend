@@ -21,11 +21,11 @@ export default function Home() {
       <main className="relative w-full">
         {currentView === "home" && (
           <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 ">
+            <div className="flex justify-center items-center  gap-6 mb-8 ">
               {/* Option 1: Upload Information */}
               <button
                 onClick={() => setCurrentView("upload-info")}
-                className="group relative p-8 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-white to-primary/5 hover:border-primary/60 hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                className="group relative p-8 rounded-2xl border-2 border-primary/30 bg-gradient-to-br max-w-sm from-primary/5 via-white to-primary/5 hover:border-primary/60 hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative space-y-4">
@@ -48,7 +48,7 @@ export default function Home() {
               </button>
 
               {/* Option 2: Upload Photo */}
-              <button
+              {/* <button
                 onClick={() => setCurrentView("upload-photo")}
                 className="group relative p-8 rounded-2xl border-2 border-secondary/30 bg-gradient-to-br from-secondary/5 via-white to-secondary/5 hover:border-secondary/60 hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
@@ -71,7 +71,7 @@ export default function Home() {
                     <ArrowRight className="h-5 w-5" />
                   </div>
                 </div>
-              </button>
+              </button> */}
             </div>
           </div>
         )}
