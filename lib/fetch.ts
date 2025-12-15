@@ -1,6 +1,6 @@
 const BASE_API_URL =
-    // "http://localhost:8000"
-    "https://api.legacylens.me";
+    "http://localhost:8000"
+    // "https://api.legacylens.me";
 
 export const searchFace = async (file: File) => {
     try {

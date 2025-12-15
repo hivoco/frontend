@@ -37,7 +37,7 @@ export default function Home() {
                       Your Personalized Video
                     </h2>
                     <p className="text-muted-foreground mb-4">
-                      Like to see your personalized video? Give it a go — Enter your ADA number and get your video!
+                      Like to see your personalized video? Give it a go — Enter your Mobile number and get your video!
                     </p>
                   </div>
                   <div className="flex items-center text-primary font-semibold group-hover:gap-3 gap-2 transition-all">
